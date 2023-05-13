@@ -59,7 +59,7 @@ def check_tokens():
 
 
 def send_message(bot, message):
-    """Oтправляет сообщение в Telegram-чат."""
+    """Oтправка сообщения в Telegram-чат."""
     logging.info('Отправка сообщения..')
     try:
         bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
@@ -112,7 +112,7 @@ def check_response(response):
 
 
 def parse_status(homework):
-    """Извечение статуса домашней работы."""
+    """Получение статуса домашней работы."""
     logging.info('Получение статуса домашней работы..')
     homework_name = homework.get('homework_name')
     homework_status = homework.get('status')
