@@ -4,13 +4,19 @@ class UnavailableTokens(Exception):
     pass
 
 
-class MessageSendingError(Exception):
-    """Ошибка отправки сообщения."""
+class UnavailableEndpoint(Exception):
+    """Ошибка запроса к эндпоинту API-сервиса."""
 
     pass
 
 
-class HomeworkNotFound(Exception):
-    """В ответе API нет домашних работ."""
+class InvalidResponseCode(Exception):
+    """Неверный код ответа."""
+
+    pass
+
+
+class ResponseDatаError(Exception):
+    """Ошибка ответа API-сервиса."""
 
     pass
