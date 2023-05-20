@@ -20,3 +20,9 @@ class ResponseDatаError(Exception):
     """Ошибка ответа API-сервиса."""
 
     pass
+
+
+class NoCurrentDateKey(Exception):
+    """В ответе API нет ключа 'current_date'."""
+
+    pass

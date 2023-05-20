@@ -81,6 +81,8 @@ def get_api_answer(timestamp):
                 f'Неверный код ответа. Получен код: {response.status_code}.'
                 f'{response.reason}'
             )
+        logger.debug('Отправлен запрос к API-сервису')
+        return response.json()
     except requests.exceptions.RequestException as error:
         raise exceptions.UnavailableEndpoint(
             f'Ошибка запроса к эндпоинту API-сервиса: {error}'
@@ -89,8 +91,6 @@ def get_api_answer(timestamp):
         raise exceptions.ResponseDatаError(
             f'Ошибка ответа API-сервиса: {error}'
         )
-    logger.debug('Отправлен запрос к API-сервису')
-    return response.json()
 
 
 def check_response(response):
@@ -100,7 +100,11 @@ def check_response(response):
     if 'homeworks' not in response:
         raise KeyError('В ответе API нет ключа "homeworks"')
     if 'current_date' not in response:
-        logger.debug('В ответе API нет ключа "current_date"')
+        raise exceptions.NoCurrentDateKey(
+            'В ответе API нет ключа "current_date"'
+        )
+    if not isinstance(response['current_date'], int):
+        raise TypeError('"current_date" не является целым числом')
     homeworks = response['homeworks']
     if not isinstance(homeworks, list):
         raise TypeError('"homeworks" не является списком')
@@ -112,10 +116,13 @@ def parse_status(homework):
     """Получение статуса домашней работы."""
     homework_name = homework.get('homework_name')
     homework_status = homework.get('status')
-    if homework_name is None:
-        raise KeyError('"homework_name" отсутствует в словаре')
+    for key in (homework_name, homework_status):
+        if not key:
+            raise KeyError(f'"{key}" отсутствует в словаре')
     if homework_status not in HOMEWORK_VERDICTS.keys():
-        raise ValueError('"homework_status" отсутствует в словаре')
+        raise ValueError(
+            f'Неизвестный статус домашней работы: {homework_status}'
+        )
     logger.debug('Получен статус домашней работы')
     return ('Изменился статус проверки работы "{homework_name}". {verdict}'
             ).format(homework_name=homework_name,
@@ -141,6 +148,8 @@ def main():
             else:
                 logger.debug('Нет новых статусов домашних работ')
             timestamp = response.get('current_date')
+        except exceptions.NoCurrentDateKey:
+            logger.error('В ответе API нет ключа "current_date"')
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
             if message != last_message:
