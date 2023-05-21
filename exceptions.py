@@ -26,3 +26,9 @@ class NoCurrentDateKey(Exception):
     """В ответе API нет ключа 'current_date'."""
 
     pass
+
+
+class CurrentDateIsNotInt(Exception):
+    """'current_date' не является целым числом."""
+
+    pass

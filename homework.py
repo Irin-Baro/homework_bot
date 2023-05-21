@@ -104,7 +104,9 @@ def check_response(response):
             'В ответе API нет ключа "current_date"'
         )
     if not isinstance(response['current_date'], int):
-        raise TypeError('"current_date" не является целым числом')
+        raise exceptions.CurrentDateIsNotInt(
+            '"current_date" не является целым числом'
+        )
     homeworks = response['homeworks']
     if not isinstance(homeworks, list):
         raise TypeError('"homeworks" не является списком')
@@ -150,6 +152,8 @@ def main():
             timestamp = response.get('current_date')
         except exceptions.NoCurrentDateKey:
             logger.error('В ответе API нет ключа "current_date"')
+        except exceptions.CurrentDateIsNotInt:
+            logger.error('"current_date" не является целым числом')
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
             if message != last_message:
